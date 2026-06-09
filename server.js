@@ -18,12 +18,12 @@ let Room = new gameRoom(10, 10, 2)
 app.use(cors()); 
 app.use(express.json())
 
-app.use('/socket-assets', express.static('/home/bazzite/MeStuff/htmlllll/yellowGame/node_modules/socket.io/client-dist'))
+app.use('/socket-assets', express.static('node_modules/socket.io/client-dist'))
 
 app.use(express.static('/home/bazzite/MeStuff/htmlllll/yellowGame'))
 
 app.get('/', (req, res) => {
-    res.sendFile("/home/bazzite/MeStuff/htmlllll/yellowGame/index.html")
+    res.sendFile("index.html")
 })
 
 app.get('/api/board', (req, res) => {
