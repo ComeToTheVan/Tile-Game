@@ -1,0 +1,29 @@
+/* Styles.css */
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+}
+
+.cell {
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    border: 1px solid #000000;
+    display: inline-block;
+    text-align: center;
+    vertical-align: middle;
+    font-size: 20px;
+    cursor: pointer;
+
+    /* Default color for unrevealed tiles */
+    background-color: #eee;
+
+    /* Default color for unrevealed tile text */
+    color: #333;
+}
+
+.roomIdText {
+     position: absolute;
+    visibility: hidden;
+    top: 500px;
+}

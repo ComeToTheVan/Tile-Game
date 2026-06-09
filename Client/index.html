@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>Game</title>
+    <link rel="stylesheet" href="./style.css">
+    <script type="importmap">
+      {
+        "imports": {
+          "socket.io-client": "/socket-assets/socket.io.esm.min.js"
+        }
+      }
+    </script>
+
+
+    <script type="module">
+      import { clientGame } from "./client.js" 
+
+      window.addEventListener("DOMContentLoaded", () => {
+        if (document.cookie === "") {
+          document.cookie = Math.random().toString(36).substring(1,20).toUpperCase()
+        }
+        
+        console.log(document.cookie)
+
+        const client = new clientGame()
+
+        let startButton = document.createElement('button')
+        startButton.innerHTML = "Create Room"
+        startButton.addEventListener("click", function() { client.createRoom() })
+        document.getElementById('makeRoom').appendChild(startButton)
+        
+        let joinButton = document.createElement('button')
+        joinButton.innerHTML = "Join Room"
+        joinButton.addEventListener("click", function() { client.joinRoom(document.getElementById("roomId").value) })
+        document.getElementById('joinRoom').appendChild(joinButton)
+      });
+    </script>
+  </head>
+  <body>
+    <div id="begining">
+      <div id="makeRoom">
+        <label>Width: </label>
+        <input type="text" id="xAmount" size="5px" value="10">
+        <br>
+        <label>Height:</label>
+        <input type="text" id="yAmount" size="5px" value="10">
+        <br>
+        <label>Players:</label> 
+        <input type="text" id="pAmount" size="2px" value="2">
+        <br>
+      </div>
+      <br> 
+      <div id="joinRoom">
+        <label>Room Id: </label>
+        <input type="text" id="roomId" size="5px" value="">
+        <br>
+      </div>
+    </div>
+    <div id="tiles">
+      <p class="roomIdText" id="roomIdDisplay">Room Id: </p>
+    </div>
+  </body>
+</html>
