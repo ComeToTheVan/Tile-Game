@@ -68,6 +68,12 @@ button:active {
     z-index: 0;
 }
 
+.tileImage {
+    position: relative;
+    width: 75px;
+    height: 75px;
+}
+
 .roomButton {
     position: absolute;
     left: 0%;
@@ -119,7 +125,7 @@ button:active {
     width: 75px;
     height: 75px;
     border: 1px solid #000000;
-    border-radius: 3%;
+    border-radius: 16%;
     display: grid;
     place-items: center;
     text-align: center;
@@ -128,11 +134,4 @@ button:active {
     cursor: pointer;
     background-color: #eee;
     color: #333;
-    border-radius: 3%;
-}
-
-.tileImage {
-    position: relative;
-    width: 75px;
-    height: 75px;
 }
