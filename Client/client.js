@@ -29,16 +29,13 @@ export class clientGame {
     })
   }
 
-  updateBoard(boardState) {    
+  updateBoard(boardState) {
     console.log(boardState.owner)
     console.log(boardState.value)
 
     for (let i = 0; i < boardState.xSize; i++) {
       for (let j = 0; j < boardState.ySize; j++) {
         let id = i + ',' + j
-
-        document.getElementById(id).innerHTML = boardState.value[i][j]
-        document.getElementById(id).style.backgroundColor = ""
 
         if (boardState.owner[i][j] == '0') {
           document.getElementById(id).style.backgroundColor = "red"
@@ -50,6 +47,23 @@ export class clientGame {
           document.getElementById(id).style.backgroundColor = "green"
         } else {
           document.getElementById(id).style.backgroundColor = ""
+        }
+
+        if (boardState.value[i][j] == '1') {
+          document.getElementById(id+"img").src = "images/one.png"
+          document.getElementById(id+"img").alt = "1"
+        } else if (boardState.value[i][j] == '2') {
+          document.getElementById(id+"img").src = "images/two.png"
+          document.getElementById(id+"img").alt = "2"
+        } else if (boardState.value[i][j] == '3') {
+          document.getElementById(id+"img").src = "images/three.png"
+          document.getElementById(id+"img").alt = "3"
+        } else if (boardState.value[i][j] >= '4') {
+          document.getElementById(id+"img").src = "images/four.png"
+          document.getElementById(id+"img").alt = "4"
+        } else {
+          document.getElementById(id+"img").src = "images/blank.png"
+          document.getElementById(id+"img").alt = "0"
         }
       }
     }   
@@ -79,6 +93,8 @@ export class clientGame {
     }
 
     document.getElementById("begining").style.visibility = "hidden"
+    document.getElementById("tiles").style.width = xSize * 75
+    document.getElementById("tiles").style.height = ySize * 75
         
     if (xSize < 0) {
       xSize = 10
@@ -94,19 +110,22 @@ export class clientGame {
         newTile.className = "cell";
         newTile.id = i + ',' + j
         newTile.addEventListener("click", () => { this.onTileClick(newTile.id) })
-        newTile.classList.add('tile')
         newTile.dataset.owner = boardState.owner[i][j]
         newTile.dataset.value = boardState.value[i][j]
 
-        newTile.style.left = (50 * i) + "px"
-        newTile.style.top = (50 * j) + "px"
+        newTile.style.left = (75 * i) + "px"
+        newTile.style.top = (75 * j) + "px"
           
-        document.getElementById("tiles").appendChild(newTile)
+        await document.getElementById("tiles").appendChild(newTile)
 
-        newTile.innerHTML = 0  
+        let img = document.createElement("img")
+        img.src = ""
+        img.className = "tileImage"
+        img.id = newTile.id + "img"
+        document.getElementById(newTile.id).appendChild(img)
       }
     }
-    document.getElementById("roomIdDisplay").style.top = (ySize * 50) + "px"
+    document.getElementById("roomIdDisplay").style.top = (ySize * 75) + "px"
     document.getElementById("roomIdDisplay").style.visibility = "visible"
 
     this.updateBoard(boardState)
@@ -163,7 +182,7 @@ export class clientGame {
     this.player = playerNum.playerNum
     this.roomId = roomId
     
-    document.getElementById("roomIdDisplay").innerHTML = "Room Id: " + roomId
+    document.getElementById("roomIdDisplay").textContent = "Room Id: " + roomId
 
     console.log("Joined room:", this.roomId, " as player:", playerNum.playerNum)
     this.Start()

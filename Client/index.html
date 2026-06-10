@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <title>Game</title>
     <link rel="stylesheet" href="./style.css">
+
     <script type="importmap">
       {
         "imports": {
@@ -11,7 +12,6 @@
         }
       }
     </script>
-
 
     <script type="module">
       import { clientGame } from "./client.js" 
@@ -26,32 +26,40 @@
         const client = new clientGame()
 
         let startButton = document.createElement('button')
-        startButton.innerHTML = "Create Room"
+        startButton.textContent = "Create Room"
+        startButton.classList.add("roomButton")
         startButton.addEventListener("click", function() { client.createRoom() })
         document.getElementById('makeRoom').appendChild(startButton)
         
         let joinButton = document.createElement('button')
-        joinButton.innerHTML = "Join Room"
+        joinButton.textContent = "Join Room"
+        joinButton.classList.add("roomButton")
         joinButton.addEventListener("click", function() { client.joinRoom(document.getElementById("roomId").value) })
         document.getElementById('joinRoom').appendChild(joinButton)
       });
     </script>
+
   </head>
   <body>
     <div id="begining">
-      <div id="makeRoom">
+      <h1>Tile Game</h1>
+      <h2>It's a game, about tiles</h2>
+      <div id="makeRoom" class="roomDiv roomMakeDiv">
         <label>Width: </label>
         <input type="text" id="xAmount" size="5px" value="10">
+        <br>
         <br>
         <label>Height:</label>
         <input type="text" id="yAmount" size="5px" value="10">
         <br>
+        <br>
         <label>Players:</label> 
         <input type="text" id="pAmount" size="2px" value="2">
         <br>
+        <br>
       </div>
       <br> 
-      <div id="joinRoom">
+      <div id="joinRoom" class="roomDiv roomJoinDiv">
         <label>Room Id: </label>
         <input type="text" id="roomId" size="5px" value="">
         <br>
