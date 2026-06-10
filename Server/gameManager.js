@@ -37,7 +37,6 @@ export default class gameRoom {
     }
 
     async playerClick(tileId, player) {
-        console.log(this.busy)
         if (this.turn == player && !this.busy) {
             this.busy = true
             const coords = tileId.split(',')
@@ -77,6 +76,8 @@ export default class gameRoom {
             let expaned = false
             let foundIds = new Array
 
+            let owner = this.boardOwner[coords[0]][coords[1]]
+
             this.boardValue[coords[0]][coords[1]] = 0
             this.boardOwner[coords[0]][coords[1]] = -1
             this.playerTiles[this.turn]--
@@ -106,9 +107,9 @@ export default class gameRoom {
                 }
                 
                 this.boardValue[newCoord[0]][newCoord[1]]++ 
-                this.boardOwner[newCoord[0]][newCoord[1]] = this.turn
+                this.boardOwner[newCoord[0]][newCoord[1]] = owner
 
-                this.playerTiles[this.turn]++
+                this.playerTiles[owner]++
 
                 let foundId = newCoord.join()
                 foundIds[foundIds.length] = foundId
