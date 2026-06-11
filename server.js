@@ -84,7 +84,6 @@ app.post('/api/board', (req, res) => {
   }
   Rooms[roomId].audio = ""
 
-  console.log(boardJson)
   res.status(200).json(boardJson)
 })
 
