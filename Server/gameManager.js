@@ -5,6 +5,12 @@ export default class gameRoom {
     constructor(xSize, ySize, players, roomId, sendBoardCallback) {
         this.xSize = xSize
         this.ySize = ySize
+        if (xSize < 0) {
+            this.xSize = 10
+        }
+        if (ySize < 0) {
+            this.ySize = 10
+        }
         this.players = new Array(players)
         this.totalSize = players
         this.joinedPlayers = 0
@@ -14,6 +20,8 @@ export default class gameRoom {
         this.started = false
         this.roomId = roomId
         this.busy = false
+
+        this.audio = ""
 
         this.totalLoop = 0
         this.loop = 0
@@ -37,21 +45,32 @@ export default class gameRoom {
     }
 
     async playerClick(tileId, player) {
-        if (this.turn == player && !this.busy) {
+        console.log(player, "attempting to click",tileId)
+        if (this.turn == player && this.loop == 0) {
+            console.log("did it")
+            this.loop++
             this.busy = true
             const coords = tileId.split(',')
             if (this.boardOwner[coords[0]][coords[1]] == -1 && this.firstTurns) {
+                console.log("first move")
+                this.audio = "first"
+
                 this.boardOwner[coords[0]][coords[1]] = this.turn
                 this.playerTiles[this.turn]++
                 this.boardValue[coords[0]][coords[1]] = 3
 
                 this.busy = false
             } else if (this.boardOwner[coords[0]][coords[1]] == this.turn) {
+                console.log("adding")
+
                 this.boardValue[coords[0]][coords[1]]++
+                this.audio = "add"
 
                 await this.checkAndExpand(tileId)
             } else {
+                console.log("invaild")
                 this.busy = false
+                this.loop--
                 return
             }
 
@@ -61,29 +80,35 @@ export default class gameRoom {
             } else {
                 this.turn++
             }
+            this.loop--
         }
     }
 
     async checkAndExpand(id) {
         const coords = id.split(',')
         if (this.boardValue[coords[0]][coords[1]] >= 4) {
+            this.loop++
             if (this.totalLoop == 0) {
                 await SLEEP(600)
             } else {
-                await SLEEP(600 / this.totalLoop)
+                await SLEEP(600 / Math.round(this.totalLoop / 4))
             }
+            this.loop--
     
             let expaned = false
             let foundIds = new Array
 
-            let owner = this.boardOwner[coords[0]][coords[1]]
+            const owner = this.boardOwner[coords[0]][coords[1]]
+            if (owner == -1) {
+                return
+            }
 
             this.boardValue[coords[0]][coords[1]] = 0
             this.boardOwner[coords[0]][coords[1]] = -1
             this.playerTiles[this.turn]--
             for (let i = 0; i < 4; i++) {
+                this.loop++
                 let newCoord = []
-
                 switch (i) {
                     case 0:
                         newCoord[0] = parseInt(coords[0])
@@ -103,6 +128,7 @@ export default class gameRoom {
                         break
                 }
                 if (newCoord[0] == -1 || newCoord[1] == -1 || newCoord[0] == this.xSize || newCoord[1] == this.ySize) {
+                    this.loop--
                     continue
                 }
                 
@@ -113,10 +139,13 @@ export default class gameRoom {
 
                 let foundId = newCoord.join()
                 foundIds[foundIds.length] = foundId
+                this.loop--
             }
             this.loop++
             this.totalLoop++
-            if (foundIds.length > 0) {             
+            if (foundIds.length > 0) {
+                this.audio = "expand"
+
                 for (let i = 0; i < foundIds.length; i++) {
                     this.checkAndExpand(foundIds[i])
                 }
