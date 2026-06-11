@@ -19,7 +19,6 @@ export default class gameRoom {
         this.playerTiles = []
         this.started = false
         this.roomId = roomId
-        this.busy = false
 
         this.audio = ""
 
@@ -49,7 +48,6 @@ export default class gameRoom {
         if (this.turn == player && this.loop == 0) {
             console.log("did it")
             this.loop++
-            this.busy = true
             const coords = tileId.split(',')
             if (this.boardOwner[coords[0]][coords[1]] == -1 && this.firstTurns) {
                 console.log("first move")
@@ -59,17 +57,16 @@ export default class gameRoom {
                 this.playerTiles[this.turn]++
                 this.boardValue[coords[0]][coords[1]] = 3
 
-                this.busy = false
             } else if (this.boardOwner[coords[0]][coords[1]] == this.turn) {
                 console.log("adding")
 
                 this.boardValue[coords[0]][coords[1]]++
                 this.audio = "add"
 
+                this.totalLoop = 0
                 await this.checkAndExpand(tileId)
             } else {
                 console.log("invaild")
-                this.busy = false
                 this.loop--
                 return
             }
@@ -157,7 +154,6 @@ export default class gameRoom {
         }
         if (this.loop == 0){
             this.totalLoop = 0
-            this.busy = false
         }
     }
 
