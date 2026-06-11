@@ -6,9 +6,12 @@ export class clientGame {
     this.players = players
     this.roomId = "h"
 
+    this.audio = []
+
     this.socket = io()  
 
     this.socket.on('boardStateUpdate', (boardState) => {
+      console.log(boardState.audio)
       this.updateBoard(boardState)
     })
   }
@@ -29,17 +32,23 @@ export class clientGame {
     })
   }
 
-  updateBoard(boardState) {
+  async updateBoard(boardState) {
     console.log(boardState.owner)
     console.log(boardState.value)
+    console.log(boardState.audio)
+    
+    if (boardState.audio != "") {
+      let audio = document.createElement("audio")
+      let source = document.createElement("source")
+      source.src = "sound/" + boardState.audio + ".mp3"
+      source.type = "audio/mpeg"
 
-    if (document.getElementById(boardState.audio) != null) {
-      document.getElementById(boardState.audio).pause()
-      document.getElementById(boardState.audio).currentTime = 0
-      document.getElementById(boardState.audio).play().catch(error => {
-        if (error.name !== 'AbortError') {
-          console.error('Play failed:', error);
-        }
+      audio.appendChild(source)
+      document.body.appendChild(audio)
+      await audio.play()
+
+      audio.addEventListener('ended', () => {
+        audio.remove();
       });
     }
 
@@ -93,6 +102,8 @@ export class clientGame {
     })
     
     const boardState = await boardRequestRespone.json()
+
+    console.log(boardState)
 
     let xSize = boardState.xSize
     let ySize = boardState.ySize
