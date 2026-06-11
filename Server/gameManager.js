@@ -50,18 +50,15 @@ export default class gameRoom {
             this.loop++
             const coords = tileId.split(',')
             if (this.boardOwner[coords[0]][coords[1]] == -1 && this.firstTurns) {
-                console.log("first move")
-                this.audio = "first"
+                this.audio = "firstPlace"
 
                 this.boardOwner[coords[0]][coords[1]] = this.turn
                 this.playerTiles[this.turn]++
                 this.boardValue[coords[0]][coords[1]] = 3
 
             } else if (this.boardOwner[coords[0]][coords[1]] == this.turn) {
-                console.log("adding")
-
                 this.boardValue[coords[0]][coords[1]]++
-                this.audio = "add"
+                this.audio = "Add"
 
                 this.totalLoop = 0
                 await this.checkAndExpand(tileId)
@@ -141,7 +138,7 @@ export default class gameRoom {
             this.loop++
             this.totalLoop++
             if (foundIds.length > 0) {
-                this.audio = "expand"
+                this.audio = "Expand"
 
                 for (let i = 0; i < foundIds.length; i++) {
                     this.checkAndExpand(foundIds[i])
