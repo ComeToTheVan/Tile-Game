@@ -33,6 +33,16 @@ export class clientGame {
     console.log(boardState.owner)
     console.log(boardState.value)
 
+    if (document.getElementById(boardState.audio) != null) {
+      document.getElementById(boardState.audio).pause()
+      document.getElementById(boardState.audio).currentTime = 0
+      document.getElementById(boardState.audio).play().catch(error => {
+        if (error.name !== 'AbortError') {
+          console.error('Play failed:', error);
+        }
+      });
+    }
+
     for (let i = 0; i < boardState.xSize; i++) {
       for (let j = 0; j < boardState.ySize; j++) {
         let id = i + ',' + j
@@ -95,13 +105,6 @@ export class clientGame {
     document.getElementById("begining").style.visibility = "hidden"
     document.getElementById("tiles").style.width = xSize * 75
     document.getElementById("tiles").style.height = ySize * 75
-        
-    if (xSize < 0) {
-      xSize = 10
-    }
-    if (ySize < 0) {
-      ySize = 10
-    }
 
     //make tiles
     for (let i = 0; i < xSize; i++) {
