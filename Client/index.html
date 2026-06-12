@@ -16,32 +16,24 @@
     <script type="module">
       import { clientGame } from "./client.js" 
 
-      window.addEventListener("DOMContentLoaded", () => {
-        if (document.cookie === "") {
-          document.cookie = Math.random().toString(36).substring(1,20).toUpperCase()
-        }
+      if (document.cookie === "") {
+        document.cookie = Math.random().toString(36).substring(1,20).toUpperCase()+";max-age="+60*60*10
+      }
         
-        console.log(document.cookie)
+      console.log(document.cookie)
 
+      window.addEventListener("DOMContentLoaded", () => {
         const client = new clientGame()
 
-        let startButton = document.createElement('button')
-        startButton.textContent = "Create Room"
-        startButton.classList.add("roomButton")
-        startButton.addEventListener("click", function() { client.createRoom() })
-        document.getElementById('makeRoom').appendChild(startButton)
-        
-        let joinButton = document.createElement('button')
-        joinButton.textContent = "Join Room"
-        joinButton.classList.add("roomButton")
-        joinButton.addEventListener("click", function() { client.joinRoom(document.getElementById("roomId").value) })
-        document.getElementById('joinRoom').appendChild(joinButton)
-      });
+        document.getElementById("createButton").addEventListener("click", function() { client.createRoom() })
+        document.getElementById("joinButton").addEventListener("click", function() { client.joinRoom(document.getElementById("roomId").value) })
+        document.getElementById("closeButton").addEventListener("click", function() { client.endOverlayNoMore() })
+      })
     </script>
 
   </head>
-  <body>
-    <div id="begining">
+  <body style="margin: 0; height: 100%; overflow: hidden">
+    <div id="begining" class="box">
       <h1>Tile Game</h1>
       <h2>It's a game, about tiles</h2>
       <div id="makeRoom" class="roomDiv roomMakeDiv">
@@ -57,16 +49,30 @@
         <input type="text" id="pAmount" size="2px" value="2">
         <br>
         <br>
+        <button id="createButton" class="roomButton">Create Room</button>
       </div>
       <br> 
       <div id="joinRoom" class="roomDiv roomJoinDiv">
         <label>Room Id: </label>
         <input type="text" id="roomId" size="5px" value="">
         <br>
+        <button id="joinButton" class="roomButton">Join Room</button>
       </div>
     </div>
-    <div id="tiles">
-      <p class="roomIdText" id="roomIdDisplay">Room Id: </p>
+    <div id="game">
+      <p class="roomText" id="roomIdDisplay">Room Id: </p>
+      <p class="roomText" id="turnDisplay">Turn: </p>
+      <p class="roomText" id="playerDisplay">You are: </p>
+    </div>
+    <div id="endOverlay">
+      <div class="endOverlay"></div>
+      <div class="box" style="z-index: 11; left: 22.79%; top: 13%;">
+        <h1>The Winner Is...</h1>
+        <br><br><br>
+        <h1 id="winnerDisplay" style="color: rgb(209, 209, 36);">Noone</h1>
+        <br><br><br><br><br><br>
+        <button id="closeButton">Close</button>
+      </div>
     </div>
   </body>
 </html>

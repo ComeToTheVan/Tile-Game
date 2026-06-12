@@ -2,7 +2,7 @@
 const SLEEP = (ms) => new Promise(resolve => setTimeout(resolve, ms))
 
 export default class gameRoom {
-    constructor(xSize, ySize, players, roomId, sendBoardCallback) {
+    constructor(xSize, ySize, players, roomId, mainFunctions) {
         this.xSize = xSize
         this.ySize = ySize
         if (xSize < 0) {
@@ -17,7 +17,9 @@ export default class gameRoom {
         this.turn = 0
         this.firstTurns = true
         this.playerTiles = []
-        this.started = false
+        this.deadPlayers = []
+        this.ended = false
+        this.winner = "Noone"
         this.roomId = roomId
 
         this.audio = ""
@@ -25,7 +27,8 @@ export default class gameRoom {
         this.totalLoop = 0
         this.loop = 0
 
-        this.sendBoardCallback = sendBoardCallback;
+        this.sendBoard = mainFunctions[0]
+        this.endRoom = mainFunctions[1]
 
         this.boardOwner = new Array(this.xSize)
         for (let i = 0; i < this.xSize; i++) {
@@ -44,9 +47,10 @@ export default class gameRoom {
     }
 
     async playerClick(tileId, player) {
-        console.log(player, "attempting to click",tileId)
-        if (this.turn == player && this.loop == 0) {
-            console.log("did it")
+        if (this.deadPlayers.includes(this.turn)){
+            this.turn++
+        }
+        if (this.turn == player && this.loop == 0 && !this.ended) {
             this.loop++
             const coords = tileId.split(',')
             if (this.boardOwner[coords[0]][coords[1]] == -1 && this.firstTurns) {
@@ -63,7 +67,6 @@ export default class gameRoom {
                 this.totalLoop = 0
                 await this.checkAndExpand(tileId)
             } else {
-                console.log("invaild")
                 this.loop--
                 return
             }
@@ -80,12 +83,14 @@ export default class gameRoom {
 
     async checkAndExpand(id) {
         const coords = id.split(',')
-        if (this.boardValue[coords[0]][coords[1]] >= 4) {
+        if (this.boardValue[coords[0]][coords[1]] >= 4 && !this.ended) {
             this.loop++
             if (this.totalLoop == 0) {
                 await SLEEP(600)
-            } else {
+            } else if (Math.round(this.totalLoop / 4) >= 1) {
                 await SLEEP(600 / Math.round(this.totalLoop / 4))
+            } else {
+                await SLEEP(600)
             }
             this.loop--
     
@@ -99,7 +104,8 @@ export default class gameRoom {
 
             this.boardValue[coords[0]][coords[1]] = 0
             this.boardOwner[coords[0]][coords[1]] = -1
-            this.playerTiles[this.turn]--
+            this.playerTiles[owner]--
+
             for (let i = 0; i < 4; i++) {
                 this.loop++
                 let newCoord = []
@@ -126,6 +132,10 @@ export default class gameRoom {
                     continue
                 }
                 
+                if (this.boardOwner[newCoord[0]][newCoord[1]] != -1) {
+                    this.playerTiles[this.boardOwner[newCoord[0]][newCoord[1]]]--
+                }
+
                 this.boardValue[newCoord[0]][newCoord[1]]++ 
                 this.boardOwner[newCoord[0]][newCoord[1]] = owner
 
@@ -135,22 +145,52 @@ export default class gameRoom {
                 foundIds[foundIds.length] = foundId
                 this.loop--
             }
-            this.loop++
             this.totalLoop++
             if (foundIds.length > 0) {
                 this.audio = "Expand"
 
+                let expandPromises = []
                 for (let i = 0; i < foundIds.length; i++) {
-                    this.checkAndExpand(foundIds[i])
+                    this.loop++
+                    
+                    let task = this.checkAndExpand(foundIds[i]).then(() => {
+                        this.loop--
+                    })
+                    expandPromises.push(task)
                 }
-                if (typeof this.sendBoardCallback === 'function') {
-                    this.sendBoardCallback(this.roomId);
+
+                this.sendBoard(this.roomId)
+
+                await Promise.all(expandPromises)
+            }
+        }
+        
+        //end room check
+        if (this.loop <= 1){
+            this.totalLoop = 0
+            if (!this.ended) {
+                for (let i = 0; i < this.totalSize; i++) {
+                    if (this.playerTiles[i] == 0 && !this.firstTurns) {
+                        if (!this.deadPlayers.includes(i)) {
+                            this.deadPlayers.push(i)
+                        }           
+                    }
+
+                    if (this.deadPlayers.length == this.totalSize - 1 && this.totalSize > 1) {
+                        this.ended = true
+                        for (let j = 0; j < this.totalSize; j++) {
+                            if (!this.deadPlayers.includes(j)) {
+                                this.winner = j
+                                break
+                            }
+                        }
+                    }
                 }
             }
-            this.loop--
         }
-        if (this.loop == 0){
-            this.totalLoop = 0
+
+        if (this.ended) {
+            this.endRoom(this.roomId, this.winner)
         }
     }
 
@@ -163,6 +203,7 @@ export default class gameRoom {
         }
         if (this.totalSize > this.joinedPlayers) {
             this.players[this.joinedPlayers] = playerId
+            this.playerTiles[this.joinedPlayers] = 0
             this.joinedPlayers++
 
             console.log(playerId, "Joined because there is space")

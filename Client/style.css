@@ -59,13 +59,42 @@ button:active {
   transform: translateY(1px);
 }
 
-#tiles {
+#game {
     position: relative;
     top: -90%;
     left: -5%;
     width: 500px;
     height: 500px;
     z-index: 0;
+}
+
+#endOverlay {
+    position: absolute;
+    visibility: hidden;
+    width: 100%;
+    height: 100%;
+}
+
+#winnerDisplay {
+    visibility: hidden;
+}
+
+.endOverlay {
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    opacity: 0.5;
+    background-color: black;
+    width: 100%;
+    height: 110%;
+    z-index: 10;
+}
+
+#closeButton {
+    visibility: hidden;
+    width: 30%;
+    font-weight: 800;
+    font-size: medium;
 }
 
 .tileImage {
@@ -95,11 +124,12 @@ button:active {
     left: 10%;
 }
 
-#begining {
+.box {
     position: relative;
     top: 30%;
 
     z-index: 1;
+    opacity: 1;
 
     width: 700px;
     height: 450px;
@@ -114,7 +144,7 @@ button:active {
     border-radius: 3%;
 }
 
-.roomIdText {
+.roomText {
     position: absolute;
     visibility: hidden;
     top: 500px;
