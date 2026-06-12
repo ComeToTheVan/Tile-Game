@@ -1,4 +1,4 @@
-# Yellow-Game
+# Tile Game
 
 ## Setup
 
