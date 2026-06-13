@@ -15,6 +15,7 @@
 
     <script type="module">
       import { clientGame } from "./client.js" 
+      window.scrollTo(0, 0)
 
       if (document.cookie === "") {
         document.cookie = Math.random().toString(36).substring(1,20).toUpperCase()+";max-age="+60*60*10
@@ -32,7 +33,7 @@
     </script>
 
   </head>
-  <body style="margin: 0; height: 100%; overflow: hidden">
+  <body style="overflow: hidden">
     <div id="begining" class="box">
       <h1>Tile Game</h1>
       <h2>It's a game, about tiles</h2>
@@ -66,7 +67,7 @@
     </div>
     <div id="endOverlay">
       <div class="endOverlay"></div>
-      <div class="box" style="z-index: 11; left: 22.79%; top: 13%;">
+      <div class="box" style="z-index: 11; top: -12.5%;">
         <h1>The Winner Is...</h1>
         <br><br><br>
         <h1 id="winnerDisplay" style="color: rgb(209, 209, 36);">Noone</h1>
