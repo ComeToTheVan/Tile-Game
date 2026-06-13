@@ -85,13 +85,14 @@ export default class gameRoom {
         const coords = id.split(',')
         if (this.boardValue[coords[0]][coords[1]] >= 4 && !this.ended) {
             this.loop++
-            if (this.totalLoop == 0) {
-                await SLEEP(600)
-            } else if (Math.round(this.totalLoop / 4) >= 1) {
-                await SLEEP(600 / Math.round(this.totalLoop / 4))
-            } else {
-                await SLEEP(600)
-            }
+
+            const speedLimit = 1.4
+            let speedModifer = 1 + (0.05 * this.loop)
+
+            speedModifer = speedModifer > speedLimit ? speedLimit : speedModifer
+
+            await SLEEP(600 / speedModifer)
+
             this.loop--
     
             let expaned = false
