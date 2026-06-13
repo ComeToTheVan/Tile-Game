@@ -42,6 +42,38 @@ export class clientGame {
     })
   }
 
+  getColour(num) {
+    switch (num) {
+      case -1:
+        return ""
+        break
+      case 0:
+        return "Red"
+        break
+      case 1:
+        return "Blue"
+        break
+      case 2:
+        return "Yellow"
+        break
+      case 3:
+        return "Green"
+        break
+      case 4:
+        return "Purple"
+        break
+      case 5:
+        return "Orange"
+        break
+      case 6:
+        return "Pink"
+        break
+      default:
+        return (num + 1).toString()
+        break
+    }
+  }
+
   async updateBoard(boardState) {
     console.log(boardState.owner)
     console.log(boardState.value)
@@ -61,65 +93,54 @@ export class clientGame {
         audio.remove()
       })
     }
-    
-    if (boardState.turn == 0) {
-      document.getElementById("turnDisplay").textContent = "Turn: Red"
-    } else if (boardState.turn == 1) {
-      document.getElementById("turnDisplay").textContent = "Turn: Blue"
-    } else if (boardState.turn == 2) {
-      document.getElementById("turnDisplay").textContent = "Turn: Yellow"
-    } else if (boardState.turn == 3) {
-      document.getElementById("turnDisplay").textContent = "Turn: Green"
-    } else if (boardState.turn == 4) {
-      document.getElementById("turnDisplay").textContent = "Turn: Purple"
-    } else if (boardState.turn == 5) {
-      document.getElementById("turnDisplay").textContent = "Turn: Orange"
-    } else if (boardState.turn == 6) {
-      document.getElementById("turnDisplay").textContent = "Turn: Pink"
-    } else{
-      document.getElementById("turnDisplay").textContent = "Turn: " + (boardState.turn + 1)
+    let playerColour = await this.getColour(boardState.turn)
+    try {
+      let num = parseInt(playerColour)
+
+      let r = num * 189
+      while (r > 255) { r -= 255 }
+      let g = num * 47
+      while (b > 255) { b -= 255 }
+      let b = num * 241
+      while (g > 255) { g -= 255 }
+
+      document.getElementById("turnDisplay").innerHTML = `Turn: <span style="color: rgb(${r},${g},${b};">${playerColour}</span>`
+
+    } catch {
+      document.getElementById("turnDisplay").innerHTML = `Turn: <span style="color: ${playerColour.toLowerCase()};">${playerColour}</span>`
     }
 
     for (let i = 0; i < boardState.xSize; i++) {
       for (let j = 0; j < boardState.ySize; j++) {
         let id = i + ',' + j
 
-        if (boardState.owner[i][j] == '0') {
-          document.getElementById(id).style.backgroundColor = "red"
-        } else if (boardState.owner[i][j] == 1) {
-          document.getElementById(id).style.backgroundColor = "blue"
-        } else if (boardState.owner[i][j] == 2) {
-          document.getElementById(id).style.backgroundColor = "yellow"
-        } else if (boardState.owner[i][j] == 3) {
-          document.getElementById(id).style.backgroundColor = "green"
-        } else if (boardState.owner[i][j] == 4) {
-          document.getElementById(id).style.backgroundColor = "purple"
-        } else if (boardState.owner[i][j] == 5) {
-          document.getElementById(id).style.backgroundColor = "orange"
-        } else if (boardState.owner[i][j] == 6) {
-          document.getElementById(id).style.backgroundColor = "pink"
-        } else if (boardState.owner[i][j] >= 7) {
-          let r = boardState.owner[i][j] * 189
-          while (r > 255) { r -= 255 }
-          let b = boardState.owner[i][j] * 47
-          while (b > 255) { b -= 255 }
-          let g = boardState.owner[i][j] * 241
-          while (g > 255) { g -= 255 }
-          document.getElementById(id).style.backgroundColor = "rgb("+r+","+b+","+g+")"
-        } else {
+        const owner = boardState.owner[i][j]
+        const value = boardState.value[i][j]
+
+        if (owner == -1) {
           document.getElementById(id).style.backgroundColor = ""
+        } else if (owner < 7) {
+          document.getElementById(id).style.backgroundColor = await this.getColour(owner).toLowerCase()
+        } else if (owner >= 7) {
+          let r = owner * 189
+          while (r > 255) { r -= 255 }
+          let g = owner * 47
+          while (b > 255) { b -= 255 }
+          let b = owner * 241
+          while (g > 255) { g -= 255 }
+          document.getElementById(id).style.backgroundColor = "rgb("+r+","+g+","+b+")"
         }
 
-        if (boardState.value[i][j] == '1') {
+        if (value == '1') {
           document.getElementById(id+"img").src = "images/one.png"
           document.getElementById(id+"img").alt = "1"
-        } else if (boardState.value[i][j] == '2') {
+        } else if (value == '2') {
           document.getElementById(id+"img").src = "images/two.png"
           document.getElementById(id+"img").alt = "2"
-        } else if (boardState.value[i][j] == '3') {
+        } else if (value == '3') {
           document.getElementById(id+"img").src = "images/three.png"
           document.getElementById(id+"img").alt = "3"
-        } else if (boardState.value[i][j] >= '4') {
+        } else if (value >= '4') {
           document.getElementById(id+"img").src = "images/four.png"
           document.getElementById(id+"img").alt = "4"
         } else {
@@ -197,27 +218,11 @@ export class clientGame {
     this.player = playerNum.playerNum
     this.roomId = roomId
     
-    document.getElementById("roomIdDisplay").textContent = "Room Id: " + roomId
-    if (this.player == 0) {
-      document.getElementById("playerDisplay").textContent = "You are: Red"
-    } else if (this.player == 1) {
-      document.getElementById("playerDisplay").textContent = "You are: Blue"
-    } else if (this.player == 2) {
-      document.getElementById("playerDisplay").textContent = "You are: Yellow"
-    } else if (this.player == 3) {
-      document.getElementById("playerDisplay").textContent = "You are: Green"
-    } else if (this.player == 4) {
-      document.getElementById("playerDisplay").textContent = "You are: Purple"
-    } else if (this.player == 5) {
-      document.getElementById("playerDisplay").textContent = "You are: Orange"
-    } else if (this.player == 6) {
-      document.getElementById("playerDisplay").textContent = "You are: Pink"
-    } else {
-      document.getElementById("playerDisplay").textContent = "You are: " + this.player
-    }
+    document.getElementById("roomIdDisplay").textContent = `Room Id: ${roomId}`
 
-    //
-    
+    const playerColour = this.getColour(this.player)
+    document.getElementById("playerDisplay").innerHTML = `You are: <span style="color: ${playerColour.toLowerCase()};">${playerColour}</span>`
+
     console.log("Joined room:", this.roomId, " as player:", playerNum.playerNum)
     const roomIdSend = {
       "roomId": this.roomId
@@ -280,33 +285,27 @@ export class clientGame {
     document.getElementById("roomIdDisplay").style.top = ((ySize * 75) + 50) + "px"
     document.getElementById("roomIdDisplay").style.visibility = "visible"
 
+    document.body.style.overflow = "visible"
+
     this.updateBoard(boardState)
   }
 
   async endGame(endInfo) {
     let winner = endInfo.winner
+
+    document.body.style.overflow = "hidden"
+    window.scrollTo(0, 0)
     document.getElementById("game").textContent = "" //AH HAHAHAHA >:)
     document.getElementById("endOverlay").style.visibility = "visible"
-    await SLEEP(2000)
-    if (winner == 0) {
-      document.getElementById("winnerDisplay").textContent = "Red!"
-    } else if (winner == 1) {
-      document.getElementById("winnerDisplay").textContent = "Blue!"
-    } else if (winner == 2) {
-      document.getElementById("winnerDisplay").textContent = "Yellow!"
-    } else if (winner == 3) {
-      document.getElementById("winnerDisplay").textContent = "Green!"
-    } else if (winner == 4) {
-      document.getElementById("winnerDisplay").textContent = "Purple!"
-    } else if (winner == 5) {
-      document.getElementById("winnerDisplay").textContent = "Orange!"
-    } else if (winner == 6) {
-      document.getElementById("winnerDisplay").textContent = "Pink!"
-    } else {
-      document.getElementById("winnerDisplay").textContent = winner + "!"
-    } 
+
+    await SLEEP(1500)
+
+    document.getElementById("winnerDisplay").style.color = this.getColour(winner)
+    document.getElementById("winnerDisplay").textContent = this.getColour(winner) + "!"
     document.getElementById("winnerDisplay").style.visibility = "visible"
-    await SLEEP(1000)
+
+    await SLEEP(500)
+
     document.getElementById("closeButton").style.visibility = "visible"
   }
 
