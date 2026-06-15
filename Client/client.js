@@ -75,10 +75,6 @@ export class clientGame {
   }
 
   async updateBoard(boardState) {
-    console.log(boardState.owner)
-    console.log(boardState.value)
-    console.log(boardState.audio)
-    
     if (boardState.audio != "") {
       let audio = document.createElement("audio")
       let source = document.createElement("source")
@@ -93,21 +89,24 @@ export class clientGame {
         audio.remove()
       })
     }
-    let playerColour = await this.getColour(boardState.turn)
-    try {
-      let num = parseInt(playerColour)
 
-      let r = num * 189
-      while (r > 255) { r -= 255 }
-      let g = num * 47
-      while (b > 255) { b -= 255 }
-      let b = num * 241
-      while (g > 255) { g -= 255 }
+    if (boardState.turn != -1) {
+      let playerColour = await this.getColour(boardState.turn)
+      try {
+        let num = parseInt(playerColour)
 
-      document.getElementById("turnDisplay").innerHTML = `Turn: <span style="color: rgb(${r},${g},${b};">${playerColour}</span>`
+        let r = num * 189
+        while (r > 255) { r -= 255 }
+        let g = num * 47
+        while (b > 255) { b -= 255 }
+        let b = num * 241
+        while (g > 255) { g -= 255 }
 
-    } catch {
-      document.getElementById("turnDisplay").innerHTML = `Turn: <span style="color: ${playerColour.toLowerCase()};">${playerColour}</span>`
+        document.getElementById("turnDisplay").innerHTML = `Turn: <span style="color: rgb(${r},${g},${b};">${playerColour}</span>`
+
+      } catch {
+        document.getElementById("turnDisplay").innerHTML = `Turn: <span style="color: ${playerColour.toLowerCase()};">${playerColour}</span>`
+      }
     }
 
     for (let i = 0; i < boardState.xSize; i++) {

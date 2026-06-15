@@ -25,10 +25,10 @@ const io = new Server(httpServer, {
 app.use(cors())
 app.use(express.json())
 
-function sendBoard(roomId) {
+function sendBoard(roomId, turn = -1) {
   if (Rooms[roomId] != null) {
     io.emit('boardStateUpdate', {
-      "turn": Rooms[roomId].turn,
+      "turn": turn,
       "value": Rooms[roomId].boardValue,
       "owner": Rooms[roomId].boardOwner,
       "xSize": Rooms[roomId].xSize,

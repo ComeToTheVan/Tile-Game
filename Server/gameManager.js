@@ -47,11 +47,7 @@ export default class gameRoom {
     }
 
     async playerClick(tileId, player) {
-        if (this.deadPlayers.includes(this.turn)){
-            this.turn++
-        }
         if (this.turn == player && this.loop == 0 && !this.ended) {
-            this.loop++
             const coords = tileId.split(',')
             if (this.boardOwner[coords[0]][coords[1]] == -1 && this.firstTurns) {
                 this.audio = "firstPlace"
@@ -60,6 +56,7 @@ export default class gameRoom {
                 this.playerTiles[this.turn]++
                 this.boardValue[coords[0]][coords[1]] = 3
 
+                await this.checkAndExpand(tileId)
             } else if (this.boardOwner[coords[0]][coords[1]] == this.turn) {
                 this.boardValue[coords[0]][coords[1]]++
                 this.audio = "Add"
@@ -67,17 +64,8 @@ export default class gameRoom {
                 this.totalLoop = 0
                 await this.checkAndExpand(tileId)
             } else {
-                this.loop--
                 return
             }
-
-            if (this.turn == this.totalSize - 1) {
-                this.turn = 0
-                this.firstTurns = false
-            } else {
-                this.turn++
-            }
-            this.loop--
         }
     }
 
@@ -86,7 +74,7 @@ export default class gameRoom {
         if (this.boardValue[coords[0]][coords[1]] >= 4 && !this.ended) {
             this.loop++
 
-            const speedLimit = 1.4
+            const speedLimit = 1.7
             let speedModifer = 1 + (0.05 * this.loop)
 
             speedModifer = speedModifer > speedLimit ? speedLimit : speedModifer
@@ -167,8 +155,9 @@ export default class gameRoom {
         }
         
         //end room check
-        if (this.loop <= 1){
+        if (this.loop == 0){
             this.totalLoop = 0
+
             if (!this.ended) {
                 for (let i = 0; i < this.totalSize; i++) {
                     if (this.playerTiles[i] == 0 && !this.firstTurns) {
@@ -187,6 +176,22 @@ export default class gameRoom {
                         }
                     }
                 }
+                if (!this.ended) {
+                    let nextTurn = this.turn;
+                    let attempts = 0;
+
+                    do {
+                        nextTurn = (nextTurn + 1) % this.totalSize;
+                        attempts++;
+                        
+                        if (nextTurn === 0) {
+                            this.firstTurns = false;
+                        }
+                    } while (this.deadPlayers.includes(nextTurn) && attempts < this.totalSize);
+
+                    this.turn = nextTurn;
+                }
+                this.sendBoard(this.roomId, this.turn);
             }
         }
 
