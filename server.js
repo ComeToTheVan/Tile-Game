@@ -41,7 +41,7 @@ function sendBoard(roomId, turn = -1) {
 }
 
 //end/destroy room 
-async function endRoom(roomId, winner) {
+async function endRoom(roomId, winner = -1) {
   console.log("Going to delete", roomId, "in 10 seconds")
   
   await sendBoard(roomId)

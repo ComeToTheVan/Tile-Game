@@ -44,9 +44,21 @@ export default class gameRoom {
                 this.boardValue[i][j] = 0
             }    
         }
+        this.action = true
+        this.timer = setInterval(() => {
+            if (this.action) {
+                this.action = false
+            } else {
+                if (!this.ended) {
+                    this.ended = true
+                    this.endRoom(this.roomId)
+                }
+            }
+        }, 600000) //60000 for one minute
     }
 
     async playerClick(tileId, player) {
+        this.action = true
         if (this.turn == player && this.loop == 0 && !this.ended) {
             const coords = tileId.split(',')
             if (this.boardOwner[coords[0]][coords[1]] == -1 && this.firstTurns) {
